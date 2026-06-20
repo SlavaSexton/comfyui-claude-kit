@@ -55,6 +55,20 @@ task, image, video, 3D, audio, utilities:
 
 </div>
 
+## It knows every model's dialect
+
+Each generative model rewards a different prompt approach: SDXL wants comma tags, FLUX wants natural-language
+sentences, video models want camera and motion direction, audio models want genre/tempo/instruments, and
+negative-prompt support varies wildly. The kit ships **[`MODELS.md`](skills/comfyui/MODELS.md)**, a per-model
+prompting reference distilled from **official sources** (each maker's docs and model cards, docs.comfy.org, and
+the per-model templates from the `anthropic-claude` node). When you name a model in a request or a workflow,
+Claude reads that model's entry first and prompts it correctly.
+
+Covered today: FLUX.1/.2 + Kontext, Z-Image, Qwen-Image/Edit, SDXL, SD1.5/3.5, HiDream, Ideogram, Nano Banana
+Pro/2, Seedream, Recraft, GPT-Image, Grok, Reve, Kandinsky, Wan 2.1-2.7, LTX-2.3/2 Pro, Hunyuan Video, Kling,
+Veo, Sora, Seedance, Luma, Runway, MiniMax, PixVerse, Vidu, Pika, Stable Audio, ACE-Step, ElevenLabs,
+ChatterBox, Hunyuan3D, Tripo, Rodin, Meshy. Anything else falls back to the template library.
+
 ## Prerequisites
 
 - [Claude Code](https://claude.com/claude-code) CLI (`claude` on PATH)

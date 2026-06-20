@@ -88,6 +88,24 @@ the clone, then rerun the generator.
 scheduler, denoise]; EmptySD3LatentImage = [width, height, batch]. Model filenames must match installed files
 exactly. Validate node types/inputs against `/object_info/<NodeType>` before writing a graph.
 
+## Per-model prompting (the mega-brain) — READ before prompting a named model
+
+Every generative model has its own dialect. SDXL wants comma tags, FLUX wants natural-language sentences, video
+models want camera + motion direction, audio models want genre/tempo/instruments, and negative-prompt support
+varies (FLUX and many turbo models ignore or break on negatives). The kit ships a per-model prompting reference,
+**`MODELS.md`** (next to this file), distilled from OFFICIAL sources: each maker's docs / model cards,
+docs.comfy.org, and the `anthropic-claude` node's per-model templates.
+
+**Auto-pull rule:** when a specific model is named in the request, the workflow, or the chosen template, READ
+that model's entry in `MODELS.md` BEFORE writing the prompt, and follow its prompt structure, its
+negative-prompt rule, and its settings. Never carry one model's style to another.
+
+`MODELS.md` covers (image) FLUX.1/.2 + Kontext, Z-Image-Turbo, Qwen-Image/Edit, SDXL, SD1.5, SD3.5, HiDream,
+Ideogram, Nano Banana Pro/2, Seedream 4.x/5 Lite, Recraft, GPT-Image, Grok, Reve, Kandinsky; (video) Wan 2.1-2.7,
+LTX-2.3 / 2 Pro, Hunyuan Video, Kling, Veo, Sora, Seedance, Luma, Runway, MiniMax, PixVerse, Vidu, Pika; (audio)
+Stable Audio, ACE-Step, ElevenLabs, ChatterBox; (3D) Hunyuan3D, Tripo, Rodin, Meshy. For any model not detailed
+there, the template library + `/object_info` is the fallback, and the matching official doc link is the source.
+
 ## In-graph Claude nodes (Layer 3) — pick the right one
 
 Three Claude nodes can exist after install; they differ by billing and purpose (see `docs/NODES.md`):
