@@ -4,7 +4,9 @@
 
 # comfyui-agent-kit
 
-**The signature ComfyUI skill for AI coding agents: Claude Code, Codex, Gemini CLI, and Qwen Code. By [AI VFX NEWS](https://t.me/AI_VFX_NEWS).**
+**The signature ComfyUI skill for AI coding agents: Claude Code, Codex, Gemini CLI, and Qwen Code.**
+
+**By [AI VFX NEWS](https://t.me/AI_VFX_NEWS).**
 
 Make your AI coding agent drive a local **ComfyUI** at full power, generate images, video, and audio, build and
 run workflows, and **show the graph live in your own ComfyUI canvas**, then hand the whole setup to someone else
