@@ -327,6 +327,11 @@ command (captured in the BOOTSTRAP machine block), then start it and wait for :8
   <the Desktop's extra_model_paths.yaml>` so the shared models resolve. Capture the exact WORKING command once per
   machine in the BOOTSTRAP machine block (test it: launch, then confirm `/object_info/UNETLoader` lists the real
   models). The GUI is only needed if the owner wants to SEE or tweak the canvas.
+- **Windows: set `PYTHONUTF8=1`** (or `PYTHONIOENCODING=utf-8`) on the launch. Custom nodes log emojis (e.g.
+  rgthree's "Loaded 48 nodes" with a party emoji); under a non-UTF-8 console codepage (cp1251 and friends) the
+  logger throws a `UnicodeEncodeError` that CRASHES startup mid-way (after it already read the model paths). The
+  Desktop app sets UTF-8 itself; a raw headless launch must too. Verified: without it the server dies on startup,
+  with it it comes up clean.
 - **Do NOT** use the MCP `restart_comfyui` / `start_comfyui` on a Desktop install (see the gotcha above); use your
   own recorded command.
 - **If the app's processes already exist but :8188 is down**, it may be mid-startup (first-launch model load) or
