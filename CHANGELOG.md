@@ -5,6 +5,13 @@ All notable changes to **comfyui-agent-kit** are recorded here. The format follo
 [Semantic Versioning](https://semver.org/). Dates are YYYY-MM-DD. The raw, per-commit history lives in git;
 this file is the curated summary.
 
+**How the numbers work (`MAJOR.MINOR.PATCH`):** bump **PATCH** for backward-compatible bug fixes, **MINOR** for
+new backward-compatible features (most updates here, e.g. new model recipes or a new agent adapter), and **MAJOR**
+for a breaking change (e.g. renaming a config key or the install layout). `0.x` was pre-release development;
+`1.0.0` is the first stable public release. To cut a release: decide the bump from what sits under `[Unreleased]`,
+rename it to `[x.y.z] - <date>`, tag the commit (`git tag -a vx.y.z -m ...`), and push the tag (`git push origin
+vx.y.z`), which can become a GitHub Release.
+
 ## [Unreleased]
 
 Nothing yet.
