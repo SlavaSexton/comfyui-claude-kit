@@ -38,7 +38,7 @@ agents gets the same stack, wired to *your* hardware. GLM (z.ai) run through Cla
   utility / template-only), local vs API.
 - **Hardware-aware model selection:** detects your VRAM, RAM, and free disk, then recommends the variant that
   fits (fp8 / offload / multi-GPU / quant) and refuses a download that won't fit, before wasting the bandwidth.
-- **17 enhancement and utility tools:** upscale / restore (Real-ESRGAN, SUPIR, SeedVR2), frame interpolation
+- **18 enhancement and utility tools:** upscale / restore (Real-ESRGAN, SUPIR, SeedVR2), frame interpolation
   (FILM, RIFE), segmentation / depth / pose (SAM3, BiRefNet, Depth Anything), plus restoration chains.
 - **534-template library** as the source of truth, plus **fetch any shared workflow by hash** and a **model
   shootout** (run a prompt through many models small, pick the winner, then scale up).
@@ -111,7 +111,7 @@ object removal (VOID). Anything else falls back to the template library.
 
 <div align="center">
 
-<img src="docs/assets/models_by_modality.png" width="880" alt="Per-model prompt recipes by modality: 36 image, 20 video, 5 audio, 4 3D, 65 total, split local/open-weight vs API, plus 17 enhancement and utility tools">
+<img src="docs/assets/models_by_modality.png" width="880" alt="Per-model prompt recipes by modality: 36 image, 20 video, 5 audio, 4 3D, 65 total, split local/open-weight vs API, plus 18 enhancement and utility tools">
 
 </div>
 

@@ -14,7 +14,10 @@ vx.y.z`), which can become a GitHub Release.
 
 ## [Unreleased]
 
-Nothing yet.
+### Fixed
+- **Utility-tool count 17 -> 18.** The Z-Image Fun-ControlNet-Tile super-res model was added to the enhancement
+  section, but the totals in the README and MODEL_INDEX still read 17. Corrected to 18. (The coverage chart image
+  still renders 17; regenerate on the next chart refresh.)
 
 ## [1.2.0] - 2026-06-22
 
