@@ -21,3 +21,8 @@ shared/comfyui/workflows/*.json
 
 # Project start-policy config (downstream projects commit their own; the example ships)
 .comfyui-agent.json
+
+# Local-only chart generators + this project's operating manual.
+# Only the rendered PNGs in docs/assets/ go public; the HTML templates stay with us for making releases.
+/tools/
+/CLAUDE.md
