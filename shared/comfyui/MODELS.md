@@ -242,6 +242,11 @@ FLUX prose will not help SDXL).
 - **Prompt style:** natural language; long detailed prompts give the best results, but minimal prompts also work;
   put words in quotes for text rendering. Built-in prompt enhancement is on by default in the ComfyUI template (swap
   it for OpenAI / Gemini nodes, or use the repo's `expansion.txt` as an LLM system prompt).
+- **Example (official prompt guide):** minimal works (`immense rocket launch exhaust as seen from extremely close
+  up`), but detail wins. Stack natural-language clauses for subject, composition, lighting, color, texture, and
+  medium, e.g. `stylized digital painting of a dark convertible on a winding coastal cliff road, high-angle
+  perspective, blocky painterly brushstrokes, golden hour sunlight hitting rocky orange terrain and green
+  vegetation, ... vibrant warm color palette, sharp graphic shadows`.
 - **Two models that pair:** **RAW** (base, undistilled, diverse and malleable) is for fine-tuning and LoRA training;
   **Turbo** (8-step distilled) is for fast inference. Train LoRAs on RAW, then apply them on Turbo (compatible).
 - **Strengths:** from-scratch MMDiT; the most aesthetic open-weight image model and the #1 text-to-image model from
@@ -257,7 +262,7 @@ FLUX prose will not help SDXL).
   shimmering light, 0.8), `krea2_warmpastel` (muted minimalist sketch, 0.8).
 - **License:** the code is Apache-2.0; the WEIGHTS use the Krea 2 Community License: commercial use needs a separate
   Enterprise License (community use is non-commercial), with acceptable-use / content-filter obligations.
-- **Source:** github.com/krea-ai/krea-2 ; huggingface.co/Comfy-Org/Krea-2 (ComfyUI repackaged) ;
+- **Source:** github.com/krea-ai/krea-2 (incl. `docs/prompting.md`) ; huggingface.co/Comfy-Org/Krea-2 (ComfyUI repackaged) ;
   huggingface.co/krea/Krea-2-Raw + huggingface.co/krea/Krea-2-Turbo ;
   blog.comfy.org/p/krea-2-open-source-models-are-now ; krea.ai/blog/krea-2-technical-report.
 

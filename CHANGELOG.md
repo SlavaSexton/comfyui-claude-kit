@@ -14,6 +14,11 @@ vx.y.z`), which can become a GitHub Release.
 
 ## [Unreleased]
 
+### Changed
+- **Krea 2 recipe: added a worked example.** Folded a representative prompt from the official `krea-ai/krea-2`
+  prompt guide (`docs/prompting.md`) into the recipe so the "long, detailed, natural language" structure is concrete,
+  and cited that doc as a source.
+
 ### Fixed
 - **Stale coverage-table descriptions.** The README coverage table labeled the Krea row "Krea 1" where the
   shipped recipe is Krea 2; corrected to "Krea 2 / FLUX.1 Krea Dev". Refreshed the stale "Updated:" date in the
