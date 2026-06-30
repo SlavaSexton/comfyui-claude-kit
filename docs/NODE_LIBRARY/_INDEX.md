@@ -9,6 +9,13 @@ rules (live-vs-curated I/O, confirmed-vs-inferred, add-on-encounter, custom-node
 `get_node_info <ClassType>` (MCP) or `/object_info`. This library holds the durable layer on top: semantics,
 gotchas, fixes, placement, build-vs-search calls.
 
+## The full universe (every node used in our workflows)
+**`_INVENTORY.md`** is the master catalog: all **552 distinct node types** used across the kit's **448
+workflows** (official template bundles + our saved workflows), classified against a live ComfyUI: **185 core,
+194 API / cloud partner, 9 custom-author** (ComfyUI-REDACTED + ComfyUI-LTXVideo), 3 missing-but-used, 161
+subgraph ids. Scan it to know a node EXISTS and where it comes from, even before it has a full entry below.
+Regenerate with `tools/node_inventory.py`.
+
 ## Documented nodes
 
 ### `core.md` - the minimal text-to-image chain (all I/O confirmed 2026-06-30)
@@ -26,13 +33,20 @@ gotchas, fixes, placement, build-vs-search calls.
 | Entry | Purpose |
 |-------|---------|
 | TECHNIQUE: transform in log | do manual scale/distort/warp in log space to preserve detail (Nuke/OCIO practice) |
-| OCIOColorConvert | Linear<->Log conversion (I/O to confirm on an OCIO-enabled install) |
-| SaveImageAdvanced | PNG 16-bit / EXR 32-bit float, linear / HDR / sRGB (confirmed) |
+| REDACTEDLogConvert | Linear<->Log (ACEScct), the node we already ship for the technique (confirmed) |
+| SaveImageAdvanced / REDACTEDSave / LTXVHDRDecodePostprocess | native EXR / linear / HDR I/O (confirmed) |
+
+### `custom-author.md` - non-core author packs used in our workflows (I/O confirmed 2026-06-30)
+| Pack | Nodes |
+|------|-------|
+| ComfyUI-REDACTED (owner's pack) | Load / ToTangent / SeedVR2 / FromTangent / Save / LogConvert |
+| ComfyUI-LTXVideo (Lightricks) | HDRDecodePostprocess / AddVideoICLoRAGuide / ICLoRALoaderModelOnly / GemmaAPITextEncode |
+| missing: SimpleMath+ (ComfyUI_essentials) | used in 1 template, not installed - read source to document |
 
 ## Reverse lookup (by task)
 - **Generate an image from text** -> the `core.md` graph.
 - **Apply a style / subject LoRA** -> LoraLoader (`core.md`).
-- **Preserve detail through a manual scale / distort / warp** -> log-space technique (`color-and-transform.md`).
+- **Preserve detail through a manual scale / distort / warp** -> log-space technique via `REDACTEDLogConvert` (`color-and-transform.md`).
 - **Save HDR / linear / EXR / 16-bit** -> SaveImageAdvanced (`color-and-transform.md`).
 - **Big image OOMs on decode** -> VAEDecodeTiled (noted under VAEDecode, `core.md`).
 - **Video loop seam artifacts on decode** -> VAEDecodeLoopKJ (noted under VAEDecode, `core.md`).

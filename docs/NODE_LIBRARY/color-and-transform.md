@@ -1,7 +1,8 @@
 # Color and transform - working in the right space
 
 Nodes and techniques for color-space conversion and manual (non-AI) pixel geometry: scale, rotate, distort,
-warp, skew, crop. The headline rule here is a production-color practice from compositing, not a single node.
+warp, skew, crop, resample. The headline is a production-color practice from compositing, and we already ship a
+node that implements it.
 
 ## TECHNIQUE: do manual transforms in LOG, not linear
 
@@ -15,49 +16,53 @@ preserves it.
 image ──▶ Linear→Log ──▶ [scale / transform / distort / warp / skew] ──▶ Log→Linear ──▶ continue
 ```
 
-- **Source / status:** *confirmed* as standard practice. This is The Foundry Nuke workflow (OCIO color
-  management) and the kit owner's own pipeline: an `OCIOColorConvert` node set to **Operation: Linear to Log**,
-  the geometric op, then `OCIOColorConvert` **Log to Linear**.
+- **Source / status:** *confirmed.* Standard practice in The Foundry's Nuke (OCIO `OCIOLogConvert` /
+  `OCIOColorSpace`) and the kit owner's own pipeline. Feed LINEAR data (linearize sRGB first); carry float
+  through the wrap; convert back before any node that expects linear / sRGB.
 - **Why it works:** a log curve allocates more code values to darks and compresses brights the way perception
-  does. Resampling / filtering in that space keeps fine tonal detail that linear interpolation would average
-  away. Same reason film scans and ACEScct grade in log.
-- **Where it slots:** wrap the log conversion tightly around the geometry node(s) only. Convert back to linear
-  before any node that expects linear / sRGB (diffusion, VAE, most filters).
-- **Anti-patterns:**
-  - Do NOT run AI / diffusion / VAE steps in log space; those expect linear or sRGB. Log is for the manual
-    geometric / resample ops only.
-  - Do NOT round-trip at 8-bit. Each conversion is lossy at low bit depth; carry 16 or 32-bit float through
-    the log wrap (and save EXR if persisting, see below).
-  - Do NOT stack redundant log<->linear pairs; one wrap around the whole transform block, not per node.
+  does, so resampling in that space keeps tonal detail linear interpolation would average away. Same reason
+  film scans and ACEScct grade in log.
+- **Anti-patterns:** do NOT run AI / diffusion / VAE steps in log (they expect linear or sRGB); do NOT
+  round-trip at 8-bit (carry float); one wrap around the whole transform block, not per node.
 
-### The OCIO node (to confirm on an OCIO-enabled install)
-- **class_type / I/O:** *inferred, not yet confirmed here.* `get_node_info OCIO` returned **"No nodes found"**
-  on this machine (ComfyUI 0.25.1, 2026-06-30): no OCIO pack is installed. The owner uses `OCIOColorConvert`
-  (Nuke-style) on another setup.
-- **To wire it for real:** on the install that has OCIO, run `get_node_info <the OCIO class>` to read the exact
-  input names (source space, target space, the Linear<->Log operation enum) before composing. To add OCIO
-  here: `search_custom_nodes "OCIO"` / `"OpenColorIO"`, install, then document the confirmed I/O in this file.
-- **Build-vs-search note:** if no maintained OCIO node fits, a small custom `LinearToLog` / `LogToLinear`
-  pair (a fixed log curve, IMAGE in / IMAGE out) is a strong candidate to build ourselves; credit the
-  requester per `_SCHEMA.md`.
+### REDACTEDLogConvert  (display: "REDACTED Linear <-> Log (ACEScct)")  -- the node we ship for this
+- **pack / source:** `ComfyUI-REDACTED` (the owner's own pack) | **category:** `REDACTED/color` | **I/O confirmed via get_node_info:** 2026-06-30
+- **purpose:** the Linear<->Log transfer that makes the technique above one node. Despite the pack name it is a
+  generic color node, not dome-specific.
+- **inputs:**
+  - `image` (IMAGE) - treated as LINEAR for `linear_to_log`; as ACEScct-log for `log_to_linear`.
+  - `operation` (combo: `linear_to_log` / `log_to_linear`) - `linear_to_log` before the transforms, `log_to_linear` after.
+- **outputs:** `image` (IMAGE) - converted, HDR range preserved (no [0,1] clip).
+- **how it works:** an ACEScct log transfer. Reversible to ~1e-14, so the wrap is lossless apart from the
+  transform itself.
+- **strengths:** HDR-safe (no clipping), reversible, one node per direction, no OCIO config / dependency.
+- **bugs / lags + fixes:** none known. It expects LINEAR in; feeding sRGB without linearizing first gives a
+  wrong curve (linearize sRGB -> `linear_to_log` -> transform -> `log_to_linear`).
+- **anti-patterns:** see the technique anti-patterns above. Not a tonemapper; it does not map HDR to SDR.
+- **placement:** wrap it tightly around the manual geometry: `linear_to_log` -> transform / scale / distort ->
+  `log_to_linear`. Author: `ComfyUI-REDACTED` (owner's pack).
+
+### OCIOColorConvert / OCIOLogConvert (Nuke origin, not installed here)
+The Nuke equivalent the practice comes from. *Inferred, not confirmed on this machine:* `get_node_info OCIO`
+returned nothing (no OCIO pack installed, 2026-06-30). You do not need it: `REDACTEDLogConvert` already
+provides the Linear<->Log transfer. If you ever want true OCIO config-driven conversion, `search_custom_nodes
+"OCIO" / "OpenColorIO"`, install, then confirm its real I/O via get_node_info before composing.
 
 ## Native linear / HDR / EXR I/O (confirmed)
 
-You do not need OCIO just to persist linear or HDR data. **SaveImageAdvanced** (core, category `image`,
-confirmed via get_node_info 2026-06-30) writes:
-- **PNG** at 8-bit or 16-bit (`input_color_space` sRGB),
-- **EXR** at 32-bit float, with `input_color_space` of `sRGB`, `HDR` (HLG Rec.2020 / BT.2100), or `linear`
-  (scene-linear Rec.709, written through unchanged). The EXR is always stored scene-linear in the matching
-  gamut.
-
-- **inputs:** `images` (IMAGE), `filename_prefix` (STRING), `format` (dynamic combo: png / exr with the
-  bit-depth + color-space sub-options above).
-- **use it for:** keeping a 16/32-bit float intermediate across a log-space transform, or delivering EXR for a
-  compositor. Pair with the log technique above when the manual transform must hold full dynamic range.
-- **anti-pattern:** plain `SaveImage` is 8-bit sRGB PNG only; it silently throws away the precision the log
-  workflow exists to protect.
+You do not need OCIO to persist linear or HDR. Confirmed via get_node_info 2026-06-30:
+- **`SaveImageAdvanced`** (core, `image`): PNG 8/16-bit; EXR 32-bit float; `input_color_space` sRGB / HDR
+  (HLG Rec.2020) / linear (scene-linear Rec.709). EXR always stored scene-linear.
+- **`REDACTEDSave`** (`ComfyUI-REDACTED`): ProRes 4444 / 422HQ (.mov 10-bit, HDR headroom) or H.264 preview;
+  sequence as `exr_f16` / `exr_f32` / `tiff_16` / `png_16` / `png_8` (EXR/TIFF keep real HDR range). See
+  `custom-author.md`.
+- **`LTXVHDRDecodePostprocess`** (`ComfyUI-LTXVideo`): decompresses LogC3 HDR IC-LoRA output + Reinhard
+  tonemap; outputs `tonemapped` (SDR) + `hdr_linear`, optional EXR sequence (needs
+  `OPENCV_IO_ENABLE_OPENEXR=1`). See `custom-author.md`.
+- **anti-pattern:** plain `SaveImage` is 8-bit sRGB PNG only; it discards the precision the log workflow exists
+  to protect.
 
 ## Status
-
-Technique: confirmed (Nuke / OCIO standard + owner pipeline), 2026-06-30. OCIOColorConvert exact I/O: inferred,
-confirm via get_node_info on an OCIO install. SaveImageAdvanced I/O: confirmed via get_node_info 2026-06-30.
+Technique: confirmed (Nuke / OCIO standard + owner pipeline). `REDACTEDLogConvert`, `SaveImageAdvanced`,
+`REDACTEDSave`, `LTXVHDRDecodePostprocess`: I/O confirmed via get_node_info 2026-06-30. OCIO node: inferred
+(not installed), and not needed.
