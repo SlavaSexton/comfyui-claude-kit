@@ -247,6 +247,25 @@ def auto_layout(wf, origin=(40, 40)):
     return wf
 
 
+def fit_group(wf, title="", color="#335159", pad=45, title_h=46):
+    """Add ONE backdrop group that FULLY encloses every node (padding all round + a title bar above). The rule
+    for a backdrop: it must cover all the nodes of the functional unit it labels, edge to edge, none sticking
+    out. Call after auto_layout. (For a graph with several functional units, group them separately upstream.)"""
+    nodes = wf.get("nodes", [])
+    if not nodes:
+        return wf
+    x0 = y0 = float("inf")
+    x1 = y1 = float("-inf")
+    for n in nodes:
+        x, y = _pos(n)
+        w, h = est_size(n)
+        x0 = min(x0, x); y0 = min(y0, y); x1 = max(x1, x + w); y1 = max(y1, y + h)
+    bounding = [round(x0 - pad), round(y0 - pad - title_h),
+                round((x1 - x0) + 2 * pad), round((y1 - y0) + 2 * pad + title_h)]
+    wf["groups"] = [{"title": title, "bounding": bounding, "color": color, "font_size": 24}]
+    return wf
+
+
 def _load(path):
     with open(path, encoding="utf-8") as f:
         return json.load(f)
