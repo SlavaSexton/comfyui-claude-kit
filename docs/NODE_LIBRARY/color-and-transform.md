@@ -32,8 +32,7 @@ transform, `log_to_lin` after. The default `method = acescct` is dependency-free
 round-trip error < 1e-6, HDR-safe, reversible), so it needs no OpenColorIO install; `method = ocio_config` uses
 an OCIO config's scene-linear <-> log instead.
 
-This supersedes the earlier `REDACTEDLogConvert`, a generic color node that was mis-named inside
-`ComfyUI-REDACTED`; that node is being retired from REDACTED in favour of `ComfyUI-OCIO`. The other five Nuke
+The other five Nuke
 OCIO nodes (ColorSpace, Display, CDLTransform, FileTransform, LookTransform) ship in the same pack, see `ocio.md`.
 
 ## Native linear / HDR / EXR I/O (confirmed)
@@ -41,9 +40,6 @@ OCIO nodes (ColorSpace, Display, CDLTransform, FileTransform, LookTransform) shi
 You do not need OCIO to persist linear or HDR. Confirmed via get_node_info 2026-06-30:
 - **`SaveImageAdvanced`** (core, `image`): PNG 8/16-bit; EXR 32-bit float; `input_color_space` sRGB / HDR
   (HLG Rec.2020) / linear (scene-linear Rec.709). EXR always stored scene-linear.
-- **`REDACTEDSave`** (`ComfyUI-REDACTED`): ProRes 4444 / 422HQ (.mov 10-bit, HDR headroom) or H.264 preview;
-  sequence as `exr_f16` / `exr_f32` / `tiff_16` / `png_16` / `png_8` (EXR/TIFF keep real HDR range). See
-  `custom-author.md`.
 - **`LTXVHDRDecodePostprocess`** (`ComfyUI-LTXVideo`): decompresses LogC3 HDR IC-LoRA output + Reinhard
   tonemap; outputs `tonemapped` (SDR) + `hdr_linear`, optional EXR sequence (needs
   `OPENCV_IO_ENABLE_OPENEXR=1`). See `custom-author.md`.
@@ -53,5 +49,5 @@ You do not need OCIO to persist linear or HDR. Confirmed via get_node_info 2026-
 ## Status
 Technique: confirmed (Nuke / OCIO standard + owner pipeline). `OCIOLogConvert` (our ComfyUI-OCIO pack): the
 ACEScct path is verified by a round-trip test (2026-06-30); the OCIO-config paths need a runtime smoke test
-(see `ocio.md`). `SaveImageAdvanced`, `REDACTEDSave`, `LTXVHDRDecodePostprocess`: I/O confirmed via
+(see `ocio.md`). `SaveImageAdvanced`, `LTXVHDRDecodePostprocess`: I/O confirmed via
 get_node_info 2026-06-30.

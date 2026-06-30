@@ -10,9 +10,9 @@ rules (live-vs-curated I/O, confirmed-vs-inferred, add-on-encounter, custom-node
 gotchas, fixes, placement, build-vs-search calls.
 
 ## The full universe (every node used in our workflows)
-**`_INVENTORY.md`** is the master catalog: all **552 distinct node types** used across the kit's **448
-workflows** (official template bundles + our saved workflows), classified against a live ComfyUI: **185 core,
-194 API / cloud partner, 9 custom-author** (ComfyUI-REDACTED + ComfyUI-LTXVideo), 3 missing-but-used, 161
+**`_INVENTORY.md`** is the master catalog: all **547 distinct node types** used across the kit's workflow
+library (official template bundles), classified against a live ComfyUI: **185 core,
+194 API / cloud partner, 4 custom-author** (ComfyUI-LTXVideo), 3 missing-but-used, 161
 subgraph ids. Scan it to know a node EXISTS and where it comes from, even before it has a full entry below.
 Regenerate with `tools/node_inventory.py`.
 
@@ -34,12 +34,11 @@ Regenerate with `tools/node_inventory.py`.
 |-------|---------|
 | TECHNIQUE: transform in log | do manual scale/distort/warp in log space to preserve detail (Nuke/OCIO practice) |
 | `ocio.md` - our ComfyUI-OCIO pack (Slava Sexton) | OCIO LogConvert + ColorSpace / Display / CDLTransform / FileTransform / LookTransform: the full Nuke OCIO set, runtime-verified |
-| SaveImageAdvanced / REDACTEDSave / LTXVHDRDecodePostprocess | native EXR / linear / HDR I/O (confirmed) |
+| SaveImageAdvanced / LTXVHDRDecodePostprocess | native EXR / linear / HDR I/O (confirmed) |
 
 ### `custom-author.md` - non-core author packs used in our workflows (I/O confirmed 2026-06-30)
 | Pack | Nodes |
 |------|-------|
-| ComfyUI-REDACTED (owner's pack) | Load / ToTangent / SeedVR2 / FromTangent / Save (LogConvert moved to ComfyUI-OCIO, see `ocio.md`) |
 | ComfyUI-LTXVideo (Lightricks) | HDRDecodePostprocess / AddVideoICLoRAGuide / ICLoRALoaderModelOnly / GemmaAPITextEncode |
 | missing: SimpleMath+ (ComfyUI_essentials) | used in 1 template, not installed - read source to document |
 

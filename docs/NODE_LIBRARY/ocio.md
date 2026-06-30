@@ -29,7 +29,7 @@ correctly-transformed images (`tools/test_ocio_nodes.py`). `OCIOFileTransform` (
 - **strengths:** dependency-free by default, HDR-safe, reversible, one node per direction.
 - **bugs / lags + fixes:** none known. `ocio_config` errors clearly if no config is found (use `acescct`).
 - **anti-patterns:** do not run AI / diffusion / VAE in log; do not round-trip at 8-bit; one wrap around the whole transform block. Feed LINEAR for `lin_to_log` (linearize sRGB first).
-- **placement:** wrap tightly around manual geometry. Replaces the old REDACTED `REDACTEDLogConvert` (that node is being retired from ComfyUI-REDACTED in favour of this pack).
+- **placement:** wrap tightly around manual geometry.
 
 ### OCIOColorSpace  (display: "OCIO ColorSpace")
 - **pack:** `ComfyUI-OCIO` | **category:** `OCIO`
