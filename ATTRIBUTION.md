@@ -76,3 +76,11 @@ Two patterns are adapted from **`Comfy-Org/comfy-skills`** (Comfy Org, MIT, http
 the "validate the graph has an output/save node before running, since API and partner nodes omit one" guardrail in
 `SKILL.md`, and the multi-reference identity-compositing technique in `docs/ADVANCED.md`. Their repo targets Comfy
 Cloud (a hosted MCP); the patterns are re-expressed here for the local stack. No files are copied or vendored.
+
+## Companion pack - ComfyUI-OCIO
+
+**[ComfyUI-OCIO](https://github.com/SlavaSexton/ComfyUI-OCIO)** - Nuke-style OpenColorIO color nodes (Read /
+Write, ColorSpace, LogConvert, Display, CDLTransform, FileTransform, LookTransform) - is authored by
+**Slava Sexton** (this kit's author), MIT-licensed. Where this kit uses, recommends, bundles, builds on, or draws
+the idea from those nodes - in full or in part, as a derivative or as the design - they are credited to
+**Slava Sexton**.
