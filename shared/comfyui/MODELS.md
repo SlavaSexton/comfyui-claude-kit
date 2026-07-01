@@ -87,6 +87,20 @@ FLUX prose will not help SDXL).
   acceleration"). LICENSE CAVEAT (inferred): the card is tagged Apache-2.0, but the weights derive from FLUX.2
   [Klein] - confirm the base Klein license before commercial use rather than trusting the fine-tune's tag alone.
   Mirrors on HF + Modelscope. Source: huggingface.co/wikeeyang/Flux2-Klein-9B-True-V3.
+- **360 / VR equirectangular panorama IMAGE (Flux.2 Klein, via panorama-stickers):** turn Flux.2 Klein into a
+  360 equirectangular (ERP) panorama generator. **`nomadoor/ComfyUI-Panorama-Stickers`** (MIT, Comfy Registry
+  v1.3.0) is a four-node ERP toolkit: **Panorama Stickers** (place / scale / rotate sticker images onto the ERP
+  canvas -> a composited conditioning panorama), **Panorama Cutout** (extract a framed perspective view from an
+  ERP image via a saved camera state), **Panorama Preview** (interactive drag-around 360 preview inside ComfyUI,
+  no headset, no duplicate default preview), **Panorama Seam Prep** (shift the ERP seam to center + emit hard /
+  blurred vertical seam masks for seam-focused inpainting). Grow a normal image into a seamless 360 sphere with
+  nomadoor's own outpaint LoRAs: **`nomadoor/flux-2-klein-4B-360-erp-outpaint-lora`** (`apache-2.0`, base Klein
+  4B) or **`...-9B-...`** (`license: other`, base Klein 9B); ready graphs
+  `flux-2-klein-{4B,9B}-360-erp-outpaint.json` ship in the repo. v1.3.0 added video + 180-panorama support, so
+  the SAME pack previews the LTX-2.3 360 VIDEO route (see LTX-2.3). NOTE - two different "Flux.2 Klein" things:
+  nomadoor's 360-outpaint LoRA (this entry) is UNRELATED to wikeeyang's Flux2-Klein-9B-True-V3 general fine-tune
+  above. Source: github.com/nomadoor/ComfyUI-Panorama-Stickers ; comfyui.nomadoor.net/en/notes/panorama-stickers ;
+  huggingface.co/nomadoor/flux-2-klein-9B-360-erp-outpaint-lora.
 - **Source:** docs.bfl.ml/guides/prompting_guide_flux2 ; github.com/black-forest-labs/skills ; github.com/capitan01R/ComfyUI-Flux2Klein-Enhancer (Klein enhancer suite, PolyForm NC).
 
 ### FLUX.1 Kontext (image edit)
@@ -490,23 +504,20 @@ Qwen-Image-Edit, OmniGen (above), Seedream Edit, and Nano Banana edit, which are
     nodes for audio-segment render loops, storyboard scheduling, and motion transfer for long-form audio-driven video.
     CAVEAT: users report the storyboard variant's custom-audio path can produce noise, so test the audio leg on a short
     clip first. Status: community-endorsed (widely used in production), NOT independently benchmarked by this kit.
-  - **Text / footage to 360 VR (equirectangular panorama):** LTX-2.3 can render a full 360 equirectangular
-    video (2:1, look-around VR) with synced audio via a 360-trained LoRA; preview it in-canvas with the
-    **`panorama-stickers`** pack (`nomadoor/ComfyUI-Panorama-Stickers`, on the Comfy Registry v1.2.3, node
-    `PanoramaPreview` - projects the flat equirect frame onto a draggable 360 sphere so you can judge VR
-    coverage without a headset). Two community routes, both on LTX-2.3, NEITHER official Lightricks: (a) **text
-    -> 360** - a text-to-360 LoRA at strength ~0.6 over the base t2v graph (Gemma-3 text encoder + the spatial
-    x2 upscaler), stacked with the distilled speed LoRA (~0.5); this is the route in a Floyo-platform template,
-    whose LoRA file (`LTX2.3_360vr-...-for-text-to-360-*.safetensors`) is Floyo-hosted and I could NOT confirm a
-    canonical public download (inferred - if you lack it, train an equirect LoRA with the LTX-2 trainer, or use
-    route b). Note the Floyo template pairs a 19B-dev checkpoint with 22B-named LoRAs (platform-internal naming);
-    on a standard install use the LTX-2.3 22B base + the ComfyUI-LTXVideo LoRA loader. (b) **flat footage -> 360
-    outpaint** - `TheBurgstall/VR-360-Outpaint-LTX2.3-IC-LoRA` (public, `cc-by-nc-4.0`, **v0.1 proof-of-concept**,
+  - **Text / footage to 360 VR video (equirectangular panorama):** LTX-2.3 renders a full 360 equirectangular
+    video (2:1, look-around VR) with synced audio. Two community routes, NEITHER official Lightricks: (a) **text
+    -> 360** via the public CivitAI LoRA **`360-degree panoramic shot - LTX-2.3`** (`civitai.com/models/2327337`,
+    type LoRA, commercial use allowed on CivitAI) at strength ~0.6 over the base t2v graph, stacked with the
+    distilled speed LoRA (~0.5); a ready graph `LTX-2.3_360vr_distilled_3stage.json` ships in the panorama-stickers
+    repo, and this CivitAI LoRA is what the public Floyo template wraps (corrects my earlier "source unconfirmed"
+    note - the canonical public source is this CivitAI LoRA, not a Floyo-only file). (b) **flat footage -> 360
+    outpaint** via `TheBurgstall/VR-360-Outpaint-LTX2.3-IC-LoRA` (public, `cc-by-nc-4.0`, **v0.1 proof-of-concept**,
     file `ltx-2.3-22b-ic-lora-360-equirect-poc-step3500.safetensors`): an IC-LoRA that takes a flat 2.39:1 clip +
     a masked equirect reference and fills the unknown regions into a plausible 360 sphere (ready graphs
-    `Equirect-Outpaint.json` / `Burgstall-VR-Outpaint.json` ship in the repo). Expect rough edges outside its
-    sweet spot; noncommercial only. For either route prompt a "seamless equirectangular 2:1 360 panorama" and keep
-    width/height divisible by 32. Source: registry.comfy.org/nodes/panorama-stickers ;
+    `Equirect-Outpaint.json` / `Burgstall-VR-Outpaint.json` in the repo); rough edges outside its sweet spot,
+    noncommercial only. Preview either in-canvas with the **`panorama-stickers`** pack's Panorama Preview node
+    (see the FLUX.2 section for the pack's four nodes; v1.3.0 added video support). Prompt a "seamless
+    equirectangular 2:1 360 panorama"; keep width/height divisible by 32. Source: civitai.com/models/2327337 ;
     github.com/nomadoor/ComfyUI-Panorama-Stickers ; huggingface.co/TheBurgstall/VR-360-Outpaint-LTX2.3-IC-LoRA.
 - **Train a custom LTX-2 LoRA (own character / style / motion / control):** that is the official Lightricks trainer
   (`Lightricks/LTX-2`, `packages/ltx-trainer`) + their `train-model` Claude skill, NOT ComfyUI; the trained
