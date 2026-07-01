@@ -52,10 +52,10 @@ if ($SkipTemplates) { Warn "skipping templates (-SkipTemplates)" }
 elseif (Test-Path (Join-Path $TemplatesDir ".git")) { Ok "templates already at $TemplatesDir (git pull to update)" }
 else {
   New-Item -ItemType Directory -Force -Path (Split-Path $TemplatesDir) | Out-Null
-  Native { git clone --filter=blob:none --no-checkout https://github.com/Comfy-Org/workflow_templates.git $TemplatesDir } | Out-Null
-  Native { git -C $TemplatesDir sparse-checkout set templates blueprints } | Out-Null
-  Native { git -C $TemplatesDir checkout } | Out-Null
-  if (Test-Path (Join-Path $TemplatesDir "templates\index.json")) {
+  $rc  = Native { git clone --filter=blob:none --no-checkout https://github.com/Comfy-Org/workflow_templates.git $TemplatesDir }
+  $rc += Native { git -C $TemplatesDir sparse-checkout set templates blueprints }
+  $rc += Native { git -C $TemplatesDir checkout }
+  if ($rc -eq 0 -and (Test-Path (Join-Path $TemplatesDir "templates\index.json"))) {
     Native { python "$RepoRoot\shared\tools\gen_quick_index.py" (Join-Path $TemplatesDir "templates") } | Out-Null
     Ok "templates cloned + index built -> $TemplatesDir"
   } else { Warn "template clone incomplete" }

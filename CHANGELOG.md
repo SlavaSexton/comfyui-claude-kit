@@ -14,6 +14,9 @@ vx.y.z`), which can become a GitHub Release.
 
 ## [Unreleased]
 
+### Fixed
+- **Installer catches a partial template clone instead of reporting success.** `shared/install_shared.ps1` now checks the exit code of each `git` step of the workflow-template clone (clone / sparse-checkout / checkout) and only prints "cloned + index built" when all three succeeded; a non-zero exit now falls through to the "template clone incomplete" warning. Previously it relied on a `Test-Path index.json` check alone, which could report success when the sparse-checkout or checkout failed after a partial clone. (Hardening suggested by the installing user's own fix.)
+
 ## [2.1.2] - 2026-07-01
 
 ### Fixed
