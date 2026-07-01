@@ -216,13 +216,13 @@ FLUX prose will not help SDXL).
 - **Structure:** six elements - subject, composition/camera, action, aspect ratio (state when non-standard), lighting (photographic terms), style; exact text in quotes; label refs; request resolution above default 1K.
 - **Strengths:** fast iteration, extended ratios (1:4, 4:1, 1:8, 8:1), tiers 0.5K/1K/2K/4K, web+image Search grounding, up to 14 refs, 360-degree character sheets.
 - **Avoid:** keyword dumps, bracket templates, negative phrasing, temperature below 1.0 (loops). Small CJK text and data-viz error-prone; knowledge cutoff Jan 2025 (use grounding).
-- **Nano Banana 2 Lite (variant):** the fastest / cheapest Nano Banana 2 tier. Official Comfy partner API nodes
-  `api_nano_banana_2_lite_t2i` (text-to-image) and `api_nano_banana_2_lite_image_edit` (edit), templates of the
-  same names (confirmed in the Comfy-Org/workflow_templates index; a sibling `api_google_nano_banana2_image_edit`
-  also ships). Vendor claims from the ComfyUI launch post (treat as marketing): ~4 s per image, ~$0.034 per 1K
-  images - built for high-volume iteration / batch variations. Same prompt style as Nano Banana 2, a lower quality
-  ceiling. Cloud / paid API (Comfy Cloud or a Gemini API key), not a local model.
 - **Source:** ai.google.dev/gemini-api/docs/image-generation.
+
+### Nano Banana 2 Lite (Gemini Flash Image, fast tier)
+- **Prompt style:** the same descriptive prose as Nano Banana 2, at a lower quality ceiling; built for volume, not the last 5% of fidelity.
+- **Strengths:** the fastest / cheapest Nano Banana tier. Vendor claims from the ComfyUI launch post (treat as marketing): ~4 s per image, ~$0.034 per 1K images. Aimed at high-volume iteration and batch variations (ad-asset batches, 50 concept variants before the brief changes).
+- **Run it:** official Comfy partner API nodes / templates `api_nano_banana_2_lite_t2i` (text-to-image) and `api_nano_banana_2_lite_image_edit` (edit), both confirmed in the Comfy-Org/workflow_templates index (a sibling `api_google_nano_banana2_image_edit` also ships). Cloud / paid (Comfy Cloud or a Gemini API key), NOT a local model.
+- **Source:** ai.google.dev/gemini-api/docs/image-generation ; Comfy-Org/workflow_templates (`api_nano_banana_2_lite_*`).
 
 ### Seedream 4.0 / 4.5 (ByteDance)
 - **Prompt style:** structured (technical specifications, direct over narrative - the exception among modern models).
