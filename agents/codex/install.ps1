@@ -16,6 +16,13 @@ $AgentsMd = "$CodexHome\AGENTS.md"
 function Ok($m){ Write-Host "  [ok] $m" -ForegroundColor Green }
 function Warn($m){ Write-Host "  [!]  $m" -ForegroundColor Yellow }
 function Have($c){ return [bool](Get-Command $c -ErrorAction SilentlyContinue) }
+# Run a native command so its stderr (e.g. git clone progress) does not trip $ErrorActionPreference='Stop'
+# into a terminating NativeCommandError. Real failures are still detectable via the returned exit code.
+function Native([scriptblock]$cmd){
+  $prev = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
+  try { & $cmd 2>&1 | Out-Null } finally { $ErrorActionPreference = $prev }
+  return $LASTEXITCODE
+}
 
 Write-Host "`n[codex] adapter" -ForegroundColor White
 if (-not (Have "codex")) { Warn "codex CLI not on PATH; install OpenAI Codex CLI first"; throw "codex missing" }
@@ -29,7 +36,7 @@ Ok "comfyui skill -> $SkillsDest\comfyui"
 
 # 2. node-building skills
 $tmp = Join-Path $env:TEMP ("cns_" + [guid]::NewGuid().ToString("N").Substring(0,8))
-& git clone --depth 1 https://github.com/jtydhr88/comfyui-custom-node-skills.git $tmp 2>&1 | Out-Null
+Native { git clone --depth 1 https://github.com/jtydhr88/comfyui-custom-node-skills.git $tmp } | Out-Null
 $src = Join-Path $tmp "plugins\comfyui-custom-nodes\skills"
 if (Test-Path $src) { Get-ChildItem $src -Directory | ForEach-Object { $d="$SkillsDest\$($_.Name)"; if (Test-Path $d){Remove-Item $d -Recurse -Force -EA SilentlyContinue}; Copy-Item $_.FullName $d -Recurse -Force }; Ok "node-building skills installed" } else { Warn "node skills not found" }
 Remove-Item $tmp -Recurse -Force -EA SilentlyContinue
@@ -39,7 +46,7 @@ New-Item -ItemType Directory -Force -Path $CodexHome | Out-Null
 $toml = ""; if (Test-Path $ConfigToml) { $toml = Get-Content $ConfigToml -Raw }
 if ($toml -match "\[mcp_servers\.comfyui\]") { Ok "MCP 'comfyui' already in config.toml" }
 else {
-  & codex mcp add comfyui -- comfyui-mcp 2>&1 | Out-Null
+  Native { codex mcp add comfyui -- comfyui-mcp } | Out-Null
   $toml2 = ""; if (Test-Path $ConfigToml) { $toml2 = Get-Content $ConfigToml -Raw }
   if ($toml2 -match "\[mcp_servers\.comfyui\]") { Ok "MCP registered via 'codex mcp add'" }
   else {

@@ -16,6 +16,13 @@ $ClaudeMd = "$env:USERPROFILE\.claude\CLAUDE.md"
 function Ok($m){ Write-Host "  [ok] $m" -ForegroundColor Green }
 function Warn($m){ Write-Host "  [!]  $m" -ForegroundColor Yellow }
 function Have($c){ return [bool](Get-Command $c -ErrorAction SilentlyContinue) }
+# Run a native command so its stderr (e.g. git clone progress) does not trip $ErrorActionPreference='Stop'
+# into a terminating NativeCommandError. Real failures are still detectable via the returned exit code.
+function Native([scriptblock]$cmd){
+  $prev = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
+  try { & $cmd 2>&1 | Out-Null } finally { $ErrorActionPreference = $prev }
+  return $LASTEXITCODE
+}
 
 Write-Host "`n[claude] adapter" -ForegroundColor White
 if (-not (Have "claude")) { Warn "claude CLI not on PATH; install Claude Code first"; throw "claude missing" }
@@ -29,7 +36,7 @@ Ok "comfyui skill -> $SkillsDest\comfyui"
 
 # 2. node-building skills (Layer 4)
 $tmp = Join-Path $env:TEMP ("cns_" + [guid]::NewGuid().ToString("N").Substring(0,8))
-& git clone --depth 1 https://github.com/jtydhr88/comfyui-custom-node-skills.git $tmp 2>&1 | Out-Null
+Native { git clone --depth 1 https://github.com/jtydhr88/comfyui-custom-node-skills.git $tmp } | Out-Null
 $src = Join-Path $tmp "plugins\comfyui-custom-nodes\skills"
 if (Test-Path $src) { Get-ChildItem $src -Directory | ForEach-Object { $d="$SkillsDest\$($_.Name)"; if (Test-Path $d){Remove-Item $d -Recurse -Force -EA SilentlyContinue}; Copy-Item $_.FullName $d -Recurse -Force }; Ok "node-building skills installed" } else { Warn "node skills not found" }
 Remove-Item $tmp -Recurse -Force -EA SilentlyContinue

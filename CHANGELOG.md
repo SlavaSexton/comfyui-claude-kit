@@ -16,6 +16,7 @@ vx.y.z`), which can become a GitHub Release.
 
 ### Fixed
 - **Installer catches a partial template clone instead of reporting success.** `shared/install_shared.ps1` now checks the exit code of each `git` step of the workflow-template clone (clone / sparse-checkout / checkout) and only prints "cloned + index built" when all three succeeded; a non-zero exit now falls through to the "template clone incomplete" warning. Previously it relied on a `Test-Path index.json` check alone, which could report success when the sparse-checkout or checkout failed after a partial clone. (Hardening suggested by the installing user's own fix.)
+- **The per-agent installers had the same NativeCommandError bug as the shared one.** `agents/claude/install.ps1` and `agents/codex/install.ps1` clone the node-building skills (and codex registers its MCP) with `& git clone ... 2>&1 | Out-Null` / `& codex mcp add ... 2>&1 | Out-Null` under `$ErrorActionPreference = "Stop"`, so the same non-fatal stderr could abort the adapter install. Both now route those calls through the `Native` helper. The gemini / qwen adapters make no native calls and were unaffected.
 
 ## [2.1.2] - 2026-07-01
 
