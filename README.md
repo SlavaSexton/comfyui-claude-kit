@@ -29,7 +29,7 @@ This is the portable, machine-independent, **multi-agent** version of a working 
 agents gets the same stack, wired to *your* hardware. GLM (z.ai) run through Claude Code is covered by the
 `claude` adapter. See **[docs/AGENTS.md](docs/AGENTS.md)** for how each agent connects.
 
-**Local-first, for everyday users and experts alike.** It scales from one-command image / video generation to a
+**Local-first, for experts and everyday users alike.** It scales from one-command image / video generation to a
 professional VFX color pipeline: v2 ships **[ComfyUI-OCIO](https://github.com/SlavaSexton/ComfyUI-OCIO)** (eight
 Nuke-style OpenColorIO nodes - Read a sequence, grade in ACES, write ProRes, fully color-managed) and the field
 guide to building your own custom nodes.
