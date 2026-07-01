@@ -5,7 +5,7 @@ so the kit knows what is broken BEFORE building a workflow instead of wiring aro
 repeating the same mistakes. Every row is sourced. Read this (and the "Real limits" section of
 [`ADVANCED.md`](ADVANCED.md)) before assembling a non-trivial graph.
 
-**Last updated: 2026-06-24** (seeded from verified primary-source research; statuses are as of this date and move
+**Last updated: 2026-07-01** (seeded from verified primary-source research; statuses are as of this date and move
 as ComfyUI ships fixes).
 
 ## Open: bites you when building or running
@@ -16,7 +16,8 @@ as ComfyUI ships fixes).
 | Color/contrast shift, worse over repeated passes | lossy VAE round-trip; tiled decode auto-triggers under VRAM pressure | encode once, stay in latent, decode once; histogram/LAB match to the source plate | gh 500 |
 | A custom node never re-runs | `IS_CHANGED` returning `True` reads as unchanged (`True == True`) | the node must `return float("NaN")` to force a rerun | docs custom-nodes/backend/server_overview |
 | Hit Queue, nothing happens (runs in ~0.05s) | stale cache served after a seed change | bust an input, or `--cache-classic` | gh 11905 |
-| Per-gen model reload thrash / slower on 4090-5090 | Dynamic VRAM (default since ~Mar 2026) regressions | `--disable-dynamic-vram` | Comfy-Org/ComfyUI discussion 12699 ; desktop 1741 |
+| Per-gen model reload thrash / slower on 4090-5090 | Dynamic VRAM (default since ~Mar 2026) regressions | `--disable-dynamic-vram` still works, but the maintainer now discourages it: prefer switching to a native fp8/int8 model format | Comfy-Org/ComfyUI discussion 12699 ; desktop 1741 ; gh 14577 (v0.26.0) |
+| Run button greys out, "workflow contains unsupported nodes", when any non-core node is in a tab | frontend does not re-evaluate node support across tab switches / new tabs | reload the page, or switch to another tab and back; the graph still runs if you copy-paste its nodes into an already-enabled tab | gh Comfy-Org/ComfyUI_frontend 6766 (open, assigned) |
 | `--lowvram` / `--novram` still OOM at slightly higher res | offload granularity does not cover peak activations | tiled VAE decode, lower res, `--cache-none` | cli_args.py ; gh 5 |
 | Single-digit canvas fps on a big graph | litegraph renders all on Canvas2D | collapse into subgraphs, mute/collapse groups, lower link-render quality | gh 7322, 4017 |
 | Nested/linked subgraphs break after a browser refresh | subgraph load order is list- not dependency-resolved | save often, avoid deep nesting, keep a `.json` backup | gh 10522 ; frontend 6639, 9979 |
@@ -31,8 +32,10 @@ as ComfyUI ships fixes).
 
 ## Recently fixed / changed
 
-(none recorded yet. The weekly task adds entries here as ComfyUI release notes mark an issue fixed, with the
-version it was fixed in, so a stale workaround above can be retired.)
+| Fixed in | Symptom | Source |
+|---|---|---|
+| ComfyUI v0.27.0 | INT8 (`*_convrot_simple`) model + LoRA degraded quality / memory leak: on offload the re-quant dropped the convrot per-channel params and re-quantized tensorwise. INT8 support itself landed in v0.27.0; these early bugs were fixed within the same release, so use v0.27.0+ (not the nightlies in between). | gh comfyanonymous/ComfyUI 14642 ; PRs 14650, 14669, 14697 ; release v0.27.0 |
+| frontend (closed 2026-06-30) | Comfy Manager button invisible on the canvas since frontend 1.47.3. Fix merged; on the 1.47.x line update to the latest patch, or use the 1.45.20 frontend that stable ComfyUI 0.27.0 pins. | gh Comfy-Org/ComfyUI_frontend 13175 |
 
 ## How this file is maintained
 
