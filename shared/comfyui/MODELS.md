@@ -358,6 +358,18 @@ FLUX prose will not help SDXL).
   sampler's positive. It forces the Krea2 descriptor template and routes the reference image+mask through Krea 2's
   Qwen3-VL-4B vision path, fixing the core `TextEncodeQwenImageEdit` (whose VAE input does nothing, since Krea 2's DiT has no
   reference-latent slot, and which falls back to the plain Qwen template).
+- **Removing model refusals (abliterated text encoder) - general technique, shown here on Krea 2:** Krea 2's text
+  encoder is `Qwen3-VL-4B-Instruct`, an instruction-tuned VLM, so it inherits the LLM's alignment and can quietly
+  steer away from legit-but-flagged VFX asks (wounds / gore for horror, weapons, real people or brands, "disturbing"
+  imagery). Swapping it for an **abliterated** build (`huihui-ai/Huihui-Qwen3-VL-4B-Instruct-abliterated`, ComfyUI
+  repack `ahmed22xa/...-comfy`; abliteration ablates the refusal direction via activation steering) makes the
+  encoder encode the prompt faithfully instead of refusing - drop it into the `CLIPLoader` (type `krea2`) in place
+  of the stock `qwen3vl_4b`. Model-agnostic: any DiT on an LLM/VLM encoder (Krea 2, Qwen-Image) takes the same swap
+  (general note in ADVANCED.md "Removing model refusals"). It changes the encoder's WILLINGNESS, not the model's
+  capability, and still carries the base license's acceptable-use terms - keep it to content you are licensed to
+  make. A community field build (Soror L.L.) pairs it with an uncensored UNET merge (`RedCraft KREA2 RedMix`) and a
+  trained LoKr; those are community, un-benchmarked, and NSFW-oriented - the reusable, general part is the
+  abliterated encoder. Source: huggingface.co/huihui-ai/Huihui-Qwen3-VL-4B-Instruct-abliterated.
 - **License:** the code is Apache-2.0; the WEIGHTS use the Krea 2 Community License: commercial use needs a separate
   Enterprise License (community use is non-commercial), with acceptable-use / content-filter obligations.
 - **Source:** github.com/krea-ai/krea-2 (incl. `docs/prompting.md`) ; huggingface.co/Comfy-Org/Krea-2 (ComfyUI repackaged) ;
