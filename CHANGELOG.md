@@ -41,6 +41,12 @@ vx.y.z`), which can become a GitHub Release.
   (~1.5-2x over fp8 on 40-series+ per the source pack), which largely supersedes the `ComfyUI-INT8-Fast` pack;
   documented when to use the native loader vs the pack, the loader/naming mismatch, and `convert_to_comfy.py`
   for old quants, using the Flux2-Klein-V3 dual INT8 quants as the worked example.
+- **OCIO node docs refreshed to ComfyUI-OCIO v1.0.1** (`NODE_LIBRARY/ocio.md`, + a note in ADVANCED.md).
+  Documented the v1.0.1 OCIO Write additions - `colorspace_in_name` (colorspace before the frame number,
+  `name_acescg.0086.exr`), `auto_colorspace` (auto Rec.709 -> ACEScg when wired from LTX's HDR decode), and
+  Nuke-style EXR `compression` - plus the new `logc3` (ARRI LogC3) curve on OCIOLogConvert and a worked LTX-2
+  HDR -> ACEScg EXR-sequence recipe (automatic + manual). Confirmed from the shipped v1.0.1 source; flagged that
+  the pack's `pyproject.toml` still reads 1.0.0 at the v1.0.1 tag (a version-bump miss in the pack, not the docs).
 
 Recipe / model counts are unchanged (still 68 recipes / 149 models). These are community fine-tunes / LoRAs / a
 tool built on base models the count already includes (FLUX.2 Klein, LTX-2.3), so they add NO new official model -

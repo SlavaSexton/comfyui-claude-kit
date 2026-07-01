@@ -1,9 +1,18 @@
 # OCIO color management (ComfyUI-OCIO, our own pack)
 
 **Eight** OpenColorIO nodes we build and maintain, modelled 1:1 on The Foundry Nuke's node set. Pack:
-**`ComfyUI-OCIO`**, author **Slava Sexton** (https://github.com/SlavaSexton/ComfyUI-OCIO), MIT, **published v1.0.0
-2026-06-30**. Category `OCIO`. Built to fill a real gap: the ComfyUI registry had no OCIO pack
-(`search_custom_nodes "OCIO"` / `"OpenColorIO"` both return nothing).
+**`ComfyUI-OCIO`**, author **Slava Sexton** (https://github.com/SlavaSexton/ComfyUI-OCIO), MIT, **released v1.0.1
+2026-07-01** (v1.0.0 was 2026-06-30). Category `OCIO`. Built to fill a real gap: the ComfyUI registry had no OCIO
+pack (`search_custom_nodes "OCIO"` / `"OpenColorIO"` both return nothing).
+
+**New in v1.0.1** (all on OCIO Write / OCIOLogConvert, detailed below): write LTX-2's HDR video straight to an
+**ACEScg EXR sequence** - either automatically (`auto_colorspace`, when wired from LTX's HDR decode) or by hand
+(the new `logc3` ARRI LogC3 curve on OCIOLogConvert); put the **colorspace in the file name** before the frame
+number (`name_acescg.0086.exr`, `colorspace_in_name`); and pick the **EXR compression** Nuke-Write-style
+(`compression`: zip / zips / piz / pxr24 / dwaa / dwab / rle / none). Confirmed against the shipped v1.0.1 source
+(io_nodes.py / nodes.py). NOTE: the pack's `pyproject.toml` still reads `1.0.0` at the v1.0.1 tag - a version
+string not bumped with the release, so the Comfy Registry would show 1.0.0; the git tag / GitHub Release are
+v1.0.1. (Flaw in the pack, not the docs.)
 
 **The two that make it a pipeline:** **OCIO Read** and **OCIO Write** - load a still / image sequence / video
 off disk, color-manage it, and write it back out in EXR / TIFF / PNG / JPEG or ProRes / DNxHR / h264 / hevc. The
@@ -34,7 +43,11 @@ in the input folder for a custom config.
 `/prompt` API against OpenColorIO 2.5.2 + the built-in ACES studio config. Read/Write exercised on a real
 12-frame EXR sequence -> jpg (all 12 written), a ProRes clip round-trip (8 frames, fps preserved), missing-frame
 fill (black / hold / error), alpha round-trip (RGBA 4-channel preserved), and the full example workflow
-(all 8 nodes) end-to-end.
+(all 8 nodes) end-to-end. **v1.0.1 additions** (`auto_colorspace`, `colorspace_in_name`, `compression`, the
+`logc3` curve) re-confirmed from the shipped source this pass (io_nodes.py:599-604, nodes.py:245/261); the LTX
+HDR -> ACEScg path + LogC3 round-trip were runtime-verified when v1.0.1 shipped (live `/prompt`:
+`LTXVHDRDecodePostprocess` -> OCIO Write, HDR peak preserved; EXR compression across all 8 options; LogC3
+round-trip max error ~5e-5).
 
 ---
 
@@ -71,8 +84,11 @@ fill (black / hold / error), alpha round-trip (RGBA 4-channel preserved), and th
   - `auto_range` (BOOLEAN) - pull `first_frame`/`last_frame`/`start_number`/`fps` automatically from the OCIO Read at the far end of the wire (through any number of nodes). Editing them by hand turns it off.
   - `first_frame`/`last_frame` (INT) - which frames to write. `start_number` (INT) - the number on the first output file. `source_start` (INT, hidden, set by the wire) - maps frame numbers to batch indices.
   - `raw_data` (BOOLEAN) - write as-is, no conversion. `output_folder` (STRING, browse button) + `filename` (STRING).
-- **how it works:** converts from->out (unless raw_data), then writes: EXR via cv2 (half/float, RGBA), TIFF via tifffile, PNG/JPEG via cv2/PIL, video via ffmpeg (rgb48le pipe -> the codec). Returns a preview of the first written frame (a wrong colorspace pick looks visibly wrong) + "wrote N frames". A Render button queues the graph.
-- **naming:** still image -> `<name>.<ext>`; sequence -> `<name>.0086.<ext>, <name>.0087.<ext>, ...`; video -> `<name>.mov` (ProRes/DNxHR) or `<name>.mp4` (h264/hevc).
+  - `colorspace_in_name` (BOOLEAN, default ON, **v1.0.1**) - put the output colorspace in the file name, BEFORE the frame number: `name_acescg.0086.exr`. Uses a short sanitized tag of `output_colorspace` (e.g. `acescg`, `rec709`, `srgb`, `logc`), or `raw` when Raw Data is on. Off -> plain `name.0086.exr`.
+  - `auto_colorspace` (BOOLEAN, default ON, **v1.0.1**, front-end only) - when the input is wired from LTX's `LTXVHDRDecodePostprocess` (their SDR->HDR decode), auto-sets `from_colorspace = "Linear Rec.709 (sRGB)"` and `output_colorspace = "ACEScg"` for you. Editing either colorspace by hand still wins.
+  - `compression` (combo, default `zip`, **v1.0.1**, EXR only) - Nuke-Write-style EXR compression: `zip` / `zips` = lossless (default), `piz` = lossless and good for grain, `dwaa` / `dwab` = smaller but lossy, plus `pxr24` / `rle` / `none`.
+- **how it works:** converts from->out (unless raw_data), then writes: EXR via cv2 (half/float, RGBA, chosen `compression`), TIFF via tifffile, PNG/JPEG via cv2/PIL, video via ffmpeg (rgb48le pipe -> the codec). Returns a preview of the first written frame (a wrong colorspace pick looks visibly wrong) + "wrote N frames". A Render button queues the graph.
+- **naming:** with `colorspace_in_name` ON (default) the colorspace tag sits before the number - still `<name>_<cs>.<ext>`; sequence `<name>_<cs>.0086.<ext>, <name>_<cs>.0087.<ext>, ...`; video `<name>_<cs>.mov` / `.mp4`. OFF -> `<name>.<ext>` / `<name>.0086.<ext>` / `<name>.mov`.
 - **anti-patterns:** EXR needs the OPENCV env var (above); video needs ffmpeg; JPEG ignores alpha. It writes to the SERVER disk, not the browser - the browse button lists server folders.
 - **placement:** the end of a graph, in place of `SaveImage`, when you need a color-managed / sequence / video / RGBA / ProRes save.
 
@@ -87,9 +103,9 @@ fill (black / hold / error), alpha round-trip (RGBA 4-channel preserved), and th
 - **placement:** anywhere a colorspace change is needed - the OCIO workhorse.
 
 ### OCIOLogConvert  (display: "OCIO LogConvert")  -- the log-space transform node, dependency-free
-- **inputs:** `image` (IMAGE); `operation` (combo `lin_to_log`/`log_to_lin`); `curve` (combo `cineon`/`acescct`/`acescc`); `mix` (FLOAT). A **swap** button flips the direction.
+- **inputs:** `image` (IMAGE); `operation` (combo `lin_to_log`/`log_to_lin`); `curve` (combo `cineon`/`acescct`/`acescc`/`logc3`, **`logc3` new in v1.0.1**); `mix` (FLOAT). A **swap** button flips the direction.
 - **purpose:** linear <-> log so manual geometry (scale, rotate, warp, resample) preserves highlight/shadow detail instead of crushing it in linear light. **This is the node for the log-space technique in `color-and-transform.md`.**
-- **curves (published specs, verified by round-trip):** `cineon` = Nuke's flat film log, black `0 -> 0.0928` (matches Nuke's default); `acescct` = ACES log with a toe (black `0.0729`, S-2016-001); `acescc` = pure ACES log (S-2014-003).
+- **curves (published specs, verified by round-trip):** `cineon` = Nuke's flat film log, black `0 -> 0.0928` (matches Nuke's default); `acescct` = ACES log with a toe (black `0.0729`, S-2016-001); `acescc` = pure ACES log (S-2014-003); **`logc3` = ARRI LogC3 EI800**, the tonal curve LTX-2's HDR IC-LoRA uses (black `0 -> 0.0928`). Use `log_to_lin` with `logc3` to decode an LTX LogC3 HDR plate to linear, KEEP the Rec.709 primaries, then convert Rec.709 -> ACEScg with OCIO ColorSpace (do NOT use a config "ARRI LogC3" space - that assumes ARRI Wide Gamut and shifts the gamut).
 - **anti-patterns:** do NOT run AI / diffusion / VAE in log; do not round-trip at 8-bit; wrap once around the whole transform block; feed LINEAR for `lin_to_log` (linearize sRGB first).
 - **placement:** wrap tightly around manual geometry.
 
@@ -133,6 +149,31 @@ OCIO Read (source=D:\shots\beauty.####.exr, input=ACEScg, output=sRGB - Display,
 `auto_range=ON` pulls the frame range + fps from OCIO Read through the wire, so the ProRes carries the right
 count and rate. The example workflow `example_workflows/OCIO_Nodes.json` in the repo shows all eight nodes on one
 image (copy its `nyc_skyline.png` + `warm_demo.cube` into ComfyUI's input folder, then open it).
+
+## Worked example (v1.0.1) - LTX-2 HDR video to an ACEScg EXR sequence
+
+LTX-2's HDR IC-LoRA emits an HDR plate on a Rec.709 gamut with an ARRI LogC3 tonal curve. To land it in a VFX
+master format (scene-linear ACEScg EXR), two ways - both write `name_acescg.####.exr`:
+
+**Method A - automatic (fewest nodes):** wire OCIO Write straight to LTX's HDR decode.
+```
+[LTX-2 HDR sampler -> VAE Decode] -> LTXVHDRDecodePostprocess (hdr_linear out)
+  -> OCIO Write (auto_colorspace=ON -> auto-sets from="Linear Rec.709 (sRGB)", output="ACEScg";
+                 container=sequence, still_format=exr, compression=zip, colorspace_in_name=ON)
+```
+`auto_colorspace` detects the LTX HDR decode upstream and fills the two colorspaces, so Write converts
+Rec.709 -> ACEScg on the way out.
+
+**Method B - manual (explicit, full control):** decode the LogC3 curve yourself, then set the gamut.
+```
+[VAE Decode of the HDR plate]
+  -> OCIO LogConvert (operation=log_to_lin, curve=logc3)   # LogC3 -> linear, KEEP Rec.709 primaries
+  -> OCIO ColorSpace (in="Linear Rec.709 (sRGB)", out="ACEScg")   # gamut Rec.709 -> ACEScg
+  -> OCIO Write (from="ACEScg", output="ACEScg", container=sequence, still_format=exr)
+```
+Both need `OPENCV_IO_ENABLE_OPENEXR=1` (EXR write) and produce an ACEScg-tagged 16f/32f EXR sequence. Do NOT
+route through a config "ARRI LogC3" colorspace - that assumes ARRI Wide Gamut and shifts the gamut; the LTX plate
+is Rec.709.
 
 **Building a graph with these nodes:** lay it out with `workflow_layout.py` like any other (see SKILL.md) - OCIO
 Read has no input and four outputs, OCIO Write is an output node; a linear Read -> operators -> Write chain lays
