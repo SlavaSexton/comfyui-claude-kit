@@ -15,15 +15,17 @@ vx.y.z`), which can become a GitHub Release.
 ## [Unreleased]
 
 ### Added
-- **360 / VR equirectangular panorama - Flux.2 Klein AND LTX-2.3 (two separate routes).** (1) **Flux.2 Klein 360
-  IMAGE:** `nomadoor/ComfyUI-Panorama-Stickers` (MIT, Comfy Registry v1.3.0) - a four-node ERP toolkit (Panorama
-  Stickers / Cutout / Preview / Seam Prep) - plus nomadoor's 360-ERP-outpaint LoRAs
-  (`flux-2-klein-4B-360-erp-outpaint-lora` apache-2.0, `...-9B-...` license:other), documented under FLUX.2 in
-  MODELS.md. (2) **LTX-2.3 360 VIDEO:** text-to-360 via the public CivitAI LoRA `360-degree panoramic shot -
-  LTX-2.3` (`civitai.com/models/2327337`, commercial-OK) - the LoRA the Floyo template wraps, which CORRECTS the
-  prior "source unconfirmed" note - and flat-to-360 outpaint via `TheBurgstall/VR-360-Outpaint-LTX2.3-IC-LoRA`
-  (`cc-by-nc-4.0`, v0.1 POC), documented under LTX-2.3. The Flux and LTX routes are unrelated and kept separate;
-  the SAME panorama-stickers pack (v1.3.0+) previews both.
+- **360 / VR equirectangular panorama - Flux.2 Klein AND LTX-2.3 (two separate routes).** The shared
+  `nomadoor/ComfyUI-Panorama-Stickers` pack (MIT, Comfy Registry v1.3.0; four ERP nodes: Panorama Stickers /
+  Cutout / Preview / Seam Prep) is documented model-agnostically in `NODE_LIBRARY/custom-author.md` - it is a
+  360 projection tool, not a model-specific pack - and referenced from BOTH recipes. (1) **Flux.2 Klein 360
+  IMAGE** (under FLUX.2 in MODELS.md): nomadoor's 360-ERP-outpaint LoRAs (`flux-2-klein-4B-...` apache-2.0,
+  `...-9B-...` license:other). (2) **LTX-2.3 360 VIDEO** (under LTX-2.3): text-to-360 via the public CivitAI LoRA
+  `360-degree panoramic shot - LTX-2.3` (`civitai.com/models/2327337`, direct download
+  `api/download/models/2816797?fileId=2702793`, commercial-OK) - the LoRA the Floyo template wraps, which
+  CORRECTS the prior "source unconfirmed" note - and flat-to-360 outpaint via
+  `TheBurgstall/VR-360-Outpaint-LTX2.3-IC-LoRA` (`cc-by-nc-4.0`, v0.1 POC). The Flux (image) and LTX (video)
+  routes are unrelated and kept in their own model sections; neither cross-references the other for the pack.
 - **Flux2-Klein-9B-True-V3 (community fine-tune) recipe.** A wikeeyang aesthetics / composition fine-tune of
   FLUX.2 [Klein] 9B (text-to-image + prompt-only instruct edit + LoRA face-swap / try-on + Mask+LoRA regional
   edit), with its full quant ladder (`bf16` / `fp8mixed` / `int8mixedrow` / `INT8-ConvRot` / `mxfp8` / `nvfp4` /

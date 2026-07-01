@@ -5,8 +5,10 @@ template bundles + our saved workflows). Derived from the live inventory (`_INVE
 get_node_info on 2026-06-30** (ComfyUI 0.25.1). kijai's packs (KJNodes etc.) are documented separately in
 `docs/KIJAI.md` and are not duplicated here.
 
-The custom-author pack used here is **ComfyUI-LTXVideo** (Lightricks). The only custom node used but NOT
-installed locally is `SimpleMath+` (from `ComfyUI_essentials`, cubiq); see the end.
+The get_node_info-confirmed pack here is **ComfyUI-LTXVideo** (Lightricks). Also documented, from its README
+(not installed locally, I/O unconfirmed): **ComfyUI-Panorama-Stickers** (nomadoor), the model-agnostic 360 tool
+the Flux.2 Klein and LTX-2.3 panorama recipes share. The only custom node used but NOT installed locally is
+`SimpleMath+` (from `ComfyUI_essentials`, cubiq); see the end.
 
 ---
 
@@ -40,6 +42,28 @@ recipes) and `docs/LTX2_TRAINING.md`.
 - **outputs:** `conditioning` (CONDITIONING).
 - **gotchas:** needs a Lightricks API key (cloud call); set `enhance_prompt` false to encode verbatim. For offline prompt enrichment prefer the in-graph LLM nodes in `docs/NODES.md`.
 - **placement:** replaces CLIPTextEncode on an LTX graph when you want Gemma enhancement.
+
+---
+
+## ComfyUI-Panorama-Stickers  (nomadoor; MIT; category `Panorama/*`)
+A model-agnostic 360 equirectangular (ERP) toolkit + WebGL frontend extension. Used by BOTH the Flux.2 Klein 360
+image route AND the LTX-2.3 360 video route (see `MODELS.md`), so it lives here rather than under either model -
+it is a projection tool, not a model-specific pack. **NOT installed locally:** node names + purposes are from the
+pack README (2026-07-01); I/O is NOT get_node_info-confirmed (install via ComfyUI Manager + `get_node_info` to
+lock exact sockets before wiring).
+
+- **Panorama Stickers** - place / scale / rotate sticker images onto an ERP canvas; outputs a composited
+  conditioning panorama (the piece you feed an outpaint / inpaint sampler).
+- **Panorama Cutout** - extract a framed perspective (rectilinear) view from an ERP image via a saved
+  camera / frame state; the counterpart that lets you edit a normal-lens crop and composite it back.
+- **Panorama Preview** - interactive drag-around 360 preview inside ComfyUI (WebGL), without duplicating the
+  default image preview. No headset needed - this is the "judge VR coverage" node.
+- **Panorama Seam Prep** - shift the ERP wrap seam to the image center and emit hard / blurred vertical seam
+  masks, for seam-focused inpainting (removes the left/right-edge discontinuity of an equirect).
+
+v1.3.0 added video + 180-panorama support. Companion outpaint LoRAs the pack was built around (nomadoor):
+Flux.2 Klein 360 ERP outpaint (`flux-2-klein-4B-...` apache-2.0 / `-9B-...` license:other). Source:
+github.com/nomadoor/ComfyUI-Panorama-Stickers ; comfyui.nomadoor.net/en/notes/panorama-stickers.
 
 ---
 

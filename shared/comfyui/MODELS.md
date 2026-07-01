@@ -88,16 +88,14 @@ FLUX prose will not help SDXL).
   [Klein] - confirm the base Klein license before commercial use rather than trusting the fine-tune's tag alone.
   Mirrors on HF + Modelscope. Source: huggingface.co/wikeeyang/Flux2-Klein-9B-True-V3.
 - **360 / VR equirectangular panorama IMAGE (Flux.2 Klein, via panorama-stickers):** turn Flux.2 Klein into a
-  360 equirectangular (ERP) panorama generator. **`nomadoor/ComfyUI-Panorama-Stickers`** (MIT, Comfy Registry
-  v1.3.0) is a four-node ERP toolkit: **Panorama Stickers** (place / scale / rotate sticker images onto the ERP
-  canvas -> a composited conditioning panorama), **Panorama Cutout** (extract a framed perspective view from an
-  ERP image via a saved camera state), **Panorama Preview** (interactive drag-around 360 preview inside ComfyUI,
-  no headset, no duplicate default preview), **Panorama Seam Prep** (shift the ERP seam to center + emit hard /
-  blurred vertical seam masks for seam-focused inpainting). Grow a normal image into a seamless 360 sphere with
-  nomadoor's own outpaint LoRAs: **`nomadoor/flux-2-klein-4B-360-erp-outpaint-lora`** (`apache-2.0`, base Klein
-  4B) or **`...-9B-...`** (`license: other`, base Klein 9B); ready graphs
-  `flux-2-klein-{4B,9B}-360-erp-outpaint.json` ship in the repo. v1.3.0 added video + 180-panorama support, so
-  the SAME pack previews the LTX-2.3 360 VIDEO route (see LTX-2.3). NOTE - two different "Flux.2 Klein" things:
+  360 equirectangular (ERP) panorama generator. The model-agnostic **`nomadoor/ComfyUI-Panorama-Stickers`** pack
+  (MIT, Comfy Registry v1.3.0; its four ERP nodes - Stickers / Cutout / Preview / Seam Prep - are broken down in
+  `NODE_LIBRARY/custom-author.md`) provides the ERP canvas, cutout, seam-prep and interactive preview. Grow a
+  normal image into a seamless 360 sphere with nomadoor's own outpaint LoRAs:
+  **`nomadoor/flux-2-klein-4B-360-erp-outpaint-lora`** (`apache-2.0`, base Klein 4B) or **`...-9B-...`**
+  (`license: other`, base Klein 9B); ready graphs `flux-2-klein-{4B,9B}-360-erp-outpaint.json` ship in the repo.
+  The SAME pack (v1.3.0+ video support) previews the separate LTX-2.3 360 VIDEO route. NOTE - two different
+  "Flux.2 Klein" things:
   nomadoor's 360-outpaint LoRA (this entry) is UNRELATED to wikeeyang's Flux2-Klein-9B-True-V3 general fine-tune
   above. Source: github.com/nomadoor/ComfyUI-Panorama-Stickers ; comfyui.nomadoor.net/en/notes/panorama-stickers ;
   huggingface.co/nomadoor/flux-2-klein-9B-360-erp-outpaint-lora.
@@ -506,8 +504,9 @@ Qwen-Image-Edit, OmniGen (above), Seedream Edit, and Nano Banana edit, which are
     clip first. Status: community-endorsed (widely used in production), NOT independently benchmarked by this kit.
   - **Text / footage to 360 VR video (equirectangular panorama):** LTX-2.3 renders a full 360 equirectangular
     video (2:1, look-around VR) with synced audio. Two community routes, NEITHER official Lightricks: (a) **text
-    -> 360** via the public CivitAI LoRA **`360-degree panoramic shot - LTX-2.3`** (`civitai.com/models/2327337`,
-    type LoRA, commercial use allowed on CivitAI) at strength ~0.6 over the base t2v graph, stacked with the
+    -> 360** via the public CivitAI LoRA **`360-degree panoramic shot - LTX-2.3`** (`civitai.com/models/2327337`;
+    direct file download `civitai.com/api/download/models/2816797?fileId=2702793`; type LoRA, commercial use
+    allowed on CivitAI) at strength ~0.6 over the base t2v graph, stacked with the
     distilled speed LoRA (~0.5); a ready graph `LTX-2.3_360vr_distilled_3stage.json` ships in the panorama-stickers
     repo, and this CivitAI LoRA is what the public Floyo template wraps (corrects my earlier "source unconfirmed"
     note - the canonical public source is this CivitAI LoRA, not a Floyo-only file). (b) **flat footage -> 360
@@ -516,7 +515,7 @@ Qwen-Image-Edit, OmniGen (above), Seedream Edit, and Nano Banana edit, which are
     a masked equirect reference and fills the unknown regions into a plausible 360 sphere (ready graphs
     `Equirect-Outpaint.json` / `Burgstall-VR-Outpaint.json` in the repo); rough edges outside its sweet spot,
     noncommercial only. Preview either in-canvas with the **`panorama-stickers`** pack's Panorama Preview node
-    (see the FLUX.2 section for the pack's four nodes; v1.3.0 added video support). Prompt a "seamless
+    (nomadoor, MIT; model-agnostic 360 tool, its four nodes are in `NODE_LIBRARY/custom-author.md`). Prompt a "seamless
     equirectangular 2:1 360 panorama"; keep width/height divisible by 32. Source: civitai.com/models/2327337 ;
     github.com/nomadoor/ComfyUI-Panorama-Stickers ; huggingface.co/TheBurgstall/VR-360-Outpaint-LTX2.3-IC-LoRA.
 - **Train a custom LTX-2 LoRA (own character / style / motion / control):** that is the official Lightricks trainer
