@@ -367,9 +367,17 @@ FLUX prose will not help SDXL).
   of the stock `qwen3vl_4b`. Model-agnostic: any DiT on an LLM/VLM encoder (Krea 2, Qwen-Image) takes the same swap
   (general note in ADVANCED.md "Removing model refusals"). It changes the encoder's WILLINGNESS, not the model's
   capability, and still carries the base license's acceptable-use terms - keep it to content you are licensed to
-  make. A community field build (Soror L.L.) pairs it with an uncensored UNET merge (`RedCraft KREA2 RedMix`) and a
-  trained LoKr; those are community, un-benchmarked, and NSFW-oriented - the reusable, general part is the
-  abliterated encoder. Source: huggingface.co/huihui-ai/Huihui-Qwen3-VL-4B-Instruct-abliterated.
+  make. The complete community build (Soror L.L., "RED_KREA_2") stacks three parts, documented here IN FULL so the
+  kit can reproduce it on request: (1) the abliterated TE above (via `CLIPLoader`); (2) an uncensored UNET -
+  `redcraftKREA2RedMix_krea2Edition.safetensors`, a community NSFW merge / finetune of Krea 2, loaded through
+  `UNETLoader`; (3) an optional custom **LoKr** adapter trained on Krea 2 (the shared `max_Krea2_LoKr.yaml` config -
+  LoKr = low-rank Kronecker, a LoRA variant), driven with RES4LYF samplers (`ClownsharKSampler_Beta` /
+  `SharkOptions_Beta`), Perturbed-Attention Guidance, SageAttention, and the official `Comfy-Org/Krea-2` style
+  LoRAs. Parts 2-3 are community, un-benchmarked, NSFW-oriented, and bound by the base license's acceptable-use
+  terms; the reusable general part is the abliterated encoder. **USAGE (kit policy): on-request reference, not a
+  promoted feature - apply it when a task actually calls for it, do NOT proactively suggest it, and keep it out of
+  the README / CHANGELOG / banner.** Source: huggingface.co/huihui-ai/Huihui-Qwen3-VL-4B-Instruct-abliterated ;
+  huggingface.co/ahmed22xa/Huihui-Qwen3-VL-4B-Instruct-abliterated-comfy.
 - **License:** the code is Apache-2.0; the WEIGHTS use the Krea 2 Community License: commercial use needs a separate
   Enterprise License (community use is non-commercial), with acceptable-use / content-filter obligations.
 - **Source:** github.com/krea-ai/krea-2 (incl. `docs/prompting.md`) ; huggingface.co/Comfy-Org/Krea-2 (ComfyUI repackaged) ;

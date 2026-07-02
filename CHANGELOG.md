@@ -32,19 +32,13 @@ vx.y.z`), which can become a GitHub Release.
   `_image_edit` (confirmed in the Comfy-Org templates index, not just the launch post). Vendor speed / price
   claims (~4 s, ~$0.034 / 1K) marked as marketing; cloud / paid. Counted as a buildable official recipe AND a
   distinct model per the same rule that counted Gemini Omni Flash.
-- **Removing model refusals (abliterated text encoders) - technique.** From the Pixel Pro field-research delta
-  (2026-07-01). A neutral, generalizable note: swap a DiT's instruction-tuned text encoder (Krea 2 and Qwen-Image
-  ride Qwen3-VL) for an abliterated build (`huihui-ai/Huihui-Qwen3-VL-4B-Instruct-abliterated`) so it stops
-  steering away from legit-but-flagged VFX content (gore, weapons, real people / brands). Added to ADVANCED.md
-  (general) + MODELS.md Krea 2 (the `CLIPLoader` swap). Framed as refusal-removal, not NSFW; the community NSFW
-  UNET merge + LoKr are named honestly but not the focus, with acceptable-use flagged. Credit: Huihui-AI, Soror L.L.
 - **Divide and Conquer tiled upscale (`Steudio/ComfyUI_Steudio`).** Auto-tile-sizing upscaler (computes the optimal
   resolution, splits into seamless tiles, merges back) added to ADVANCED.md as an alternative to Ultimate SD
-  Upscale / Tiled Diffusion. Same delta.
+  Upscale / Tiled Diffusion. From the Pixel Pro field-research delta 2026-07-01.
 
-Count change: **68 -> 69 recipes, 149 -> 150 models**, from Nano Banana 2 Lite only. LumiPic, ComfyUI_Gear, the
-abliterated-encoder technique, and the Divide and Conquer tiler do NOT change the counts - community LoRAs /
-techniques / tools, on already-counted bases. All count places synced: README, MODEL_INDEX, and the cover +
+Count change: **68 -> 69 recipes, 149 -> 150 models**, from Nano Banana 2 Lite only. LumiPic, ComfyUI_Gear, and the
+Divide and Conquer tiler do NOT change the counts - community LoRAs / techniques / tools, on already-counted bases.
+All count places synced: README, MODEL_INDEX, and the cover +
 models_by_modality banners re-rendered (chip now `150 models · 69 recipes`); the models_by_modality chart's stale
 per-modality alt text (37/20/66) was corrected to the real 39/21/69 in the same pass.
 
